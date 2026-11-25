@@ -17,7 +17,7 @@ import os
 import sys
 import datetime
 
-VERSION = "0.3.3"
+VERSION = "0.3.4"
 APP_NAME_DEFAULT = "NixNet Job Command"
 BRAND_DEFAULT = "nixfred"
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.4 — 2026-11-25
+
+- The space-and-punctuation-ignoring search pass now runs only when the search text itself has a space or punctuation, so a short word such as "neo" no longer matches across word boundaries
+
 ## 0.3.3 — 2026-11-25
 
 - Jobs: the status, fit, source and tier dropdowns are no longer remembered between

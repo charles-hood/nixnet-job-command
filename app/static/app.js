@@ -306,7 +306,7 @@ function jobMatches(j, q) {
   if (hay.includes(needle)) return true;
   // "neo 4j", "neo-4j" and "Neo4j" are the same search: compare again with spaces and punctuation removed.
   const flat = squash(needle);
-  if (flat.length < 3) return false;
+  if (flat === needle || flat.length < 4) return false;   // only when the search itself has a space or punctuation
   if (j._flat === undefined || j._flatSrc !== hay.length) { j._flat = squash(hay); j._flatSrc = hay.length; }
   return j._flat.includes(flat);
 }
