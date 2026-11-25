@@ -165,6 +165,26 @@ class ApiTests(unittest.TestCase):
             config.CFG.reload()
 
 
+    def test_toml_fallback_keeps_commas_and_hashes_inside_quotes(self):
+        # Python 3.9 and 3.10 have no tomllib, so config.toml goes through the fallback reader.
+        import config
+        got = config._parse_toml_fallback(
+            'name = "Acme #1"   # trailing comment\n'
+            'port = 8742 # comment\n'
+            '[fit]\n'
+            'locations = ["Remote US", "Portland, OR", \'Austin, TX\']  # comment, with a comma\n'
+            'kinds = ["SE", "SA",]\n'
+            'empty = []\n')
+        self.assertEqual(got["name"], "Acme #1")
+        self.assertEqual(got["port"], 8742)
+        self.assertEqual(got["fit"]["locations"], ["Remote US", "Portland, OR", "Austin, TX"])
+        self.assertEqual(got["fit"]["kinds"], ["SE", "SA"])
+        self.assertEqual(got["fit"]["empty"], [])
+        # The shipped example reads the same with or without tomllib.
+        example = (REPO / "config.example.toml").read_text(encoding="utf-8")
+        self.assertEqual(config._parse_toml_fallback(example)["fit"]["locations"], ["Remote US", "Portland, OR"])
+
+
     # ---- job-alert intake ----
     ALERT = """Your job alert for Solutions Engineer in United States
 Forward Deployed Engineer

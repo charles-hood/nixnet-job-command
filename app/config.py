@@ -43,18 +43,53 @@ def _which_config():
     return None
 
 
+def _strip_comment(line):
+    """Drop a trailing # comment, but keep a # that sits inside a quoted string."""
+    quote = None
+    for i, ch in enumerate(line):
+        if quote:
+            if ch == quote:
+                quote = None
+        elif ch in "\"'":
+            quote = ch
+        elif ch == "#":
+            return line[:i]
+    return line
+
+
+def _split_array(inner):
+    """Split array items on commas, but keep a comma that sits inside a quoted string."""
+    items, cur, quote = [], "", None
+    for ch in inner:
+        if quote:
+            if ch == quote:
+                quote = None
+        elif ch in "\"'":
+            quote = ch
+        elif ch == ",":
+            items.append(cur)
+            cur = ""
+            continue
+        cur += ch
+    items.append(cur)
+    return [i.strip() for i in items if i.strip()]
+
+
 def _parse_toml(text):
     """Minimal TOML reader for our config subset. Uses tomllib when available."""
     try:
         import tomllib
         return tomllib.loads(text)
     except ModuleNotFoundError:
-        pass
-    # Very small fallback: tables, dotted keys, strings, ints, bools, string arrays.
+        return _parse_toml_fallback(text)
+
+
+def _parse_toml_fallback(text):
+    """Python 3.9 and 3.10 have no tomllib. Tables, dotted keys, strings, ints, bools, string arrays."""
     data = {}
     section = data
     for raw in text.splitlines():
-        line = raw.split("#", 1)[0].strip()
+        line = _strip_comment(raw).strip()
         if not line:
             continue
         if line.startswith("[") and line.endswith("]"):
@@ -73,10 +108,8 @@ def _parse_toml(text):
         elif v.startswith("[") and v.endswith("]"):
             inner = v[1:-1].strip()
             items = []
-            if inner:
-                for item in inner.split(","):
-                    item = item.strip().strip('"').strip("'")
-                    items.append(item)
+            for item in _split_array(inner):
+                items.append(item.strip('"').strip("'"))
             val = items
         elif (v.startswith('"') and v.endswith('"')) or (v.startswith("'") and v.endswith("'")):
             val = v[1:-1]
