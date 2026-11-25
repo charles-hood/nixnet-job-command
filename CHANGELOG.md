@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.3 — 2026-11-25
+
+- Jobs: the status, fit, source and tier dropdowns are no longer remembered between
+  visits, so a filter left over from earlier (for example "To apply") can never
+  hide a role you applied to. Only the search text and sort order are kept
+- Search ignores spaces and punctuation as a second pass, so "neo 4j" and
+  "neo-4j" find "Neo4j"
+
 ## 0.3.2 — 2026-11-25
 
 - Job alerts now read Dice and Built In emails as well as LinkedIn. Send the email

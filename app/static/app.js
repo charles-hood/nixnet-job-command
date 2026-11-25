@@ -298,10 +298,17 @@ document.addEventListener("keydown", e => {
 });
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 
+const squash = t => String(t || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
 function jobMatches(j, q) {
   if (!q) return true;
   const hay = (j.search || [j.ref, j.company, j.role, j.location, j.status, j.remote || "", j.jd || ""].join(" ")).toLowerCase();
-  return hay.includes(String(q).trim().toLowerCase());
+  const needle = String(q).trim().toLowerCase();
+  if (hay.includes(needle)) return true;
+  // "neo 4j", "neo-4j" and "Neo4j" are the same search: compare again with spaces and punctuation removed.
+  const flat = squash(needle);
+  if (flat.length < 3) return false;
+  if (j._flat === undefined || j._flatSrc !== hay.length) { j._flat = squash(hay); j._flatSrc = hay.length; }
+  return j._flat.includes(flat);
 }
 // Roles that match a search but are not in the list being searched (applied, closed, paused, stretch...).
 // The queue only lists "To apply" roles, so without this an applied role vanishes from its own search.
@@ -608,7 +615,9 @@ function dash() {
 /* ---------- Jobs list ---------- */
 function jobsView() {
   const srcs = [...new Set(STATE.jobs.map(j => j.source_group || j.source).filter(Boolean))].sort();
-  const saved = JSON.parse(localStorage.getItem("jobsFilter") || "{}");
+  // Only the search text and sort order are remembered. The status, fit, source and tier dropdowns always start
+  // at "All", so a filter left over from an earlier visit can never hide a role you are looking for.
+  const saved = (() => { const o = JSON.parse(localStorage.getItem("jobsFilter") || "{}"); return { q: o.q || "", sort: o.sort || "" }; })();
   app.innerHTML = `<h1 id="pageTop" tabindex="-1">Jobs</h1>
   <div class="search-row"><input id="q" class="search-box" type="search" placeholder="Search company, role, ref, location, status or JD…" value="${esc(saved.q || "")}" autocomplete="off"><span class="match-count" id="matchCount"></span></div>
   <p class="sub">${STATE.jobs.length} opportunities. Every one is an object with dozens of attributes; open one for answers, the JD, screenshots and the timeline.</p>
@@ -617,12 +626,12 @@ function jobsView() {
     <select id="fst"><option value="">All fits</option><option value="stretch"${saved.fst === "stretch" ? " selected" : ""}>Stretch only</option><option value="main"${saved.fst === "main" ? " selected" : ""}>Main queue only</option></select>
     <select id="fsrc"><option value="">All sources</option>${srcs.map(s => `<option ${saved.fsrc === s ? "selected" : ""}>${esc(s)}</option>`).join("")}</select>
     <select id="ft"><option value="">All tiers</option><option ${saved.ft === "A" ? "selected" : ""}>A</option><option ${saved.ft === "B" ? "selected" : ""}>B</option><option ${saved.ft === "C" ? "selected" : ""}>C</option></select>
-    <select id="sort"><option value="rank">Sort: apply order</option><option value="fit">Fit score</option><option value="company">Company</option><option value="comp">Top of pay range</option><option value="updated">Recently updated</option></select>
+    <select id="sort">${[["rank", "Sort: apply order"], ["fit", "Fit score"], ["company", "Company"], ["comp", "Top of pay range"], ["updated", "Recently updated"]].map(([v, t]) => `<option value="${v}"${saved.sort === v ? " selected" : ""}>${t}</option>`).join("")}</select>
     <a class="btn" href="#/data">+ Add / import</a>
   </div><div class="callout amber" id="hiddenNote" style="display:none;margin:0 0 12px"></div><div class="card list" id="list"></div>`;
   const draw = () => {
     const q = $("#q").value, fs = $("#fs").value, fsrc = $("#fsrc").value, ft = $("#ft").value, fst = $("#fst").value, sort = $("#sort").value;
-    localStorage.setItem("jobsFilter", JSON.stringify({ q, fs, fsrc, ft, fst, sort }));
+    localStorage.setItem("jobsFilter", JSON.stringify({ q, sort }));
     let L = STATE.jobs.filter(j => (!fs || j.status === fs) && (!fsrc || (j.source_group || j.source) === fsrc) && (!ft || j.tier === ft) && (fst !== "stretch" || isStretch(j)) && (fst !== "main" || !isStretch(j)) && jobMatches(j, q));
     const top = j => +(String(j.comp || "").match(/\$?([\d.]+)K?\s*(?:$|[^\d]*$)/) || [0, 0])[1] || 0;
     if (sort === "fit") L.sort((a, b) => (b.fit_score || 0) - (a.fit_score || 0));
