@@ -289,6 +289,7 @@ View job: https://www.linkedin.com/comm/jobs/view/9000000004/?trackingId=jkl
         self.assertEqual(got[0]["url"], "https://builtin.com/job/technical-account-manager/111")
         add, _ = AL.plan(got, [])
         self.assertEqual([a["apply_url"] for a in add], [g["url"] for g in got])
+        self.assertEqual({a["source"] for a in add}, {"Built In job alert"})
 
 
     def test_dice_alert_parser_and_two_postings_same_title(self):
@@ -338,6 +339,8 @@ Manage your daily job alert > <https://www.dice.com/dashboard/alerts>
         add, dups = AL.plan(got, [])
         self.assertEqual((len(add), len(dups)), (3, 0))                    # both same-title postings appear
         self.assertEqual(add[0]["ats"], "Dice")
+        self.assertEqual(add[0]["source"], "Dice job alert")                 # not "LinkedIn job alert"
+        self.assertEqual(AL.plan(got, [], "My feed")[0][0]["source"], "My feed")   # a caller's label still wins
         self.assertTrue(add[2]["stretch"])                                 # agency post goes to Stretch
         again, d2 = AL.plan(got, [dict(a, ref="J-%d" % i) for i, a in enumerate(add)])
         self.assertEqual((len(again), len(d2)), (0, 3))                    # same URLs are already tracked

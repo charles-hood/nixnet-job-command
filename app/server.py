@@ -462,7 +462,7 @@ def alerts_ingest(c, b, actor="job-alerts"):
         read_ids.append((eid, len(parsed)))
     for i in items:
         i.setdefault("email_id", "")
-    add, dups = AL.plan(items, all_jobs(c, light=False), b.get("source") or "LinkedIn job alert")
+    add, dups = AL.plan(items, all_jobs(c, light=False), b.get("source") or None)
     out = {"dry_run": dry, "emails_read": len(read_ids), "emails_already_read": skipped, "roles_found": len(items),
            "duplicates": dups, "added": []}
     if not dry and add:
