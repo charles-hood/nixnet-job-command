@@ -276,5 +276,72 @@ View job: https://www.linkedin.com/comm/jobs/view/9000000004/?trackingId=jkl
         self.assertEqual(sorted(d["tracked_as"] for d in dups), ["J-900", "J-901"])
 
 
+    def test_builtin_digest_parser(self):
+        AL = __import__("alerts")
+        body = ("Job Preferences Technical Account Manager, Atlanta, Georgia, USA [](https://t.example/L0/https:%2F%2Fbuiltin.com%2Fprofile%2Fjob-preferences%3Fi=1/1/x)\n"
+                "| Initech Technical Account Manager In Office Atlanta, GA [](https://t.example/L0/https:%2F%2Fbuiltin.com%2Fjob%2Ftechnical-account-manager%2F111%3Fi=1/1/x) |\n"
+                "| Red Brick Co Staff Technical Account Manager Remote United States $116,960-$171,900 [](https://t.example/L0/https:%2F%2Fbuiltin.com%2Fjob%2Fstaff-technical-account-manager%2F222%3Fi=1/1/x) |\n"
+                "| Get More Recommendations [](https://t.example/L0/https:%2F%2Fbuiltin.com%2Fjobs%3Fi=1/1/x) |\n")
+        got = AL.parse_email(body, "b1")
+        self.assertEqual([(g["company"], g["title"], g["location"], g["comp"]) for g in got],
+                         [("Initech", "Technical Account Manager", "In Office Atlanta, GA", ""),
+                          ("Red Brick Co", "Staff Technical Account Manager", "Remote United States", "$116,960-$171,900")])
+        self.assertEqual(got[0]["url"], "https://builtin.com/job/technical-account-manager/111")
+        add, _ = AL.plan(got, [])
+        self.assertEqual([a["apply_url"] for a in add], [g["url"] for g in got])
+
+
+    def test_dice_alert_parser_and_two_postings_same_title(self):
+        AL = __import__("alerts")
+        body = """Forward Deployed Engineer at Globex Test
+
+Hi, Fred.
+
+New matches for your presales job alert:
+
+ <https://www.dice.com/company/globex>
+
+Forward Deployed Engineer
+<https://www.dice.com/job-detail/8a16acd7-4429-44b7-87c2-5a3d335dcf31>
+
+Globex Test
+
+Arlington, Virginia, USA
+
+Posted: 11-20-2026
+
+Forward Deployed Engineer
+<https://www.dice.com/job-detail/4cf1c085-95cf-4477-b3eb-fef3947e80bc>
+
+Globex Test
+
+Arlington, Virginia, USA
+
+Posted: 10-27-2026
+
+Hiring for Clinical Solutions Lead at Raritan, New Jersey -
+Hybrid <https://www.dice.com/job-detail/3a86d685-f2ea-4a17-ac94-4f095841709e>
+
+Staffing Co LLC.
+
+Raritan, New Jersey, USA
+
+Posted: 11-11-2026
+
+Manage your daily job alert > <https://www.dice.com/dashboard/alerts>
+"""
+        got = AL.parse_email(body, "d1", "Results")
+        self.assertEqual([(g["company"], g["title"], g["location"]) for g in got],
+                         [("Globex Test", "Forward Deployed Engineer", "Arlington, Virginia, USA"),
+                          ("Globex Test", "Forward Deployed Engineer", "Arlington, Virginia, USA"),
+                          ("Staffing Co LLC.", "Hiring for Clinical Solutions Lead at Raritan, New Jersey - Hybrid", "Raritan, New Jersey, USA")])
+        add, dups = AL.plan(got, [])
+        self.assertEqual((len(add), len(dups)), (3, 0))                    # both same-title postings appear
+        self.assertEqual(add[0]["ats"], "Dice")
+        self.assertTrue(add[2]["stretch"])                                 # agency post goes to Stretch
+        again, d2 = AL.plan(got, [dict(a, ref="J-%d" % i) for i, a in enumerate(add)])
+        self.assertEqual((len(again), len(d2)), (0, 3))                    # same URLs are already tracked
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

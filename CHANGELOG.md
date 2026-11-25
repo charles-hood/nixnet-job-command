@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.2 — 2026-11-25
+
+- Job alerts now read Dice and Built In emails as well as LinkedIn. Send the email
+  text to `POST /api/alerts/ingest`; the app picks the reader from the body
+- Two postings with the same title and different links (Dice ids, Built In ids)
+  both appear. A title match still means "already tracked" only for roles you
+  applied to or closed, roles with the same link, or curated roles that have no
+  alert id to compare
+
 ## 0.3.1 — 2026-11-25
 
 - Job alerts: a LinkedIn job id is now authoritative. Two postings with the same

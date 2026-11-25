@@ -20,6 +20,7 @@ Whoever has the mail (an agent, a script with its own Gmail login) hands the
 text to POST /api/alerts/ingest.
 """
 import re
+from urllib.parse import unquote
 
 import duplicates as DUP
 
@@ -93,6 +94,100 @@ def parse_linkedin(text, email_id="", subject=""):
     return out
 
 
+BUILTIN_LINK = re.compile(r"\[\]\((\S+?)\)")
+BUILTIN_JOB = re.compile(r"builtin\.com/job/([a-z0-9-]+)/(\d+)", re.I)
+
+
+def parse_builtin(text, email_id="", subject=""):
+    """Built In job-preference digests: one table row per role, 'Company Title Workplace Location Pay [](link)'.
+    The link carries the role slug and id, which splits the company from the title reliably."""
+    out, seen = [], set()
+    alert = ""
+    for raw in (text or "").splitlines():
+        line = raw.strip().strip("|").strip()
+        if line.lower().startswith("job preferences"):
+            alert = line[len("job preferences"):].split("[](")[0].strip()
+            continue
+        links = BUILTIN_LINK.findall(line)
+        m = next((BUILTIN_JOB.search(unquote(u)) for u in links if BUILTIN_JOB.search(unquote(u))), None)
+        if not m:
+            continue
+        slug, rid = m.group(1).lower(), m.group(2)
+        if rid in seen:
+            continue
+        words = line.split("[](")[0].split()
+        norm = [re.sub(r"[^a-z0-9]", "", w.lower()) for w in words]
+        sw = [w for w in slug.split("-") if w]
+        idx = None
+        for i in range(len(words)):
+            seq = [n for n in norm[i:] if n][:len(sw)]
+            if seq == sw:
+                idx = i
+                break
+        if idx is None or idx == 0:
+            continue
+        j, n = idx, 0
+        while n < len(sw) and j < len(words):
+            n += 1 if norm[j] else 0
+            j += 1
+        rest = words[j:]
+        pay = next((i for i, w in enumerate(rest) if w.startswith("$")), None)
+        comp = " ".join(rest[pay:]) if pay is not None else ""
+        where = " ".join(rest[:pay] if pay is not None else rest)
+        seen.add(rid)
+        out.append({"title": " ".join(words[idx:j]), "company": " ".join(words[:idx]), "location": where, "comp": comp,
+                    "job_id": "", "url": "https://builtin.com/job/%s/%s" % (slug, rid), "source": "built in",
+                    "alert": alert or subject, "email_id": email_id})
+    return out
+
+
+DICE_JOB = re.compile(r"<(https://www\.dice\.com/job-detail/([0-9a-f-]{36}))")
+
+
+def parse_dice(text, email_id="", subject=""):
+    """Dice alerts: a title block, then the job link, then company, location and 'Posted:' blocks."""
+    blocks, cur = [], []
+    for raw in (text or "").splitlines():
+        line = raw.strip()
+        if not line:
+            if cur:
+                blocks.append(cur)
+            cur = []
+        else:
+            cur.append(line)
+    if cur:
+        blocks.append(cur)
+    out, seen = [], set()
+    for bi, blk in enumerate(blocks):
+        joined = "\n".join(blk)
+        m = DICE_JOB.search(joined)
+        if not m or m.group(2) in seen:
+            continue
+        before = joined[:m.start()].replace("\n", " ").strip()
+        title = before
+        if not title and bi > 0 and not blocks[bi - 1][0].startswith("<"):
+            title = " ".join(blocks[bi - 1])
+        nxt = [b for b in blocks[bi + 1:bi + 4] if not b[0].startswith("<")]
+        company = nxt[0][0] if nxt else ""
+        location = nxt[1][0] if len(nxt) > 1 and not nxt[1][0].startswith("Posted:") else ""
+        if not (title and company):
+            continue
+        seen.add(m.group(2))
+        out.append({"title": title, "company": company, "location": location, "comp": "", "job_id": "",
+                    "url": "https://www.dice.com/job-detail/" + m.group(2), "source": "dice",
+                    "alert": subject, "email_id": email_id})
+    return out
+
+
+def parse_email(text, email_id="", subject=""):
+    """Pick the reader that fits the email body."""
+    if "dice.com/job-detail/" in (text or ""):
+        return parse_dice(text, email_id, subject)
+    if "builtin.com" in (text or "") and BUILTIN_JOB.search(unquote(text or "")):
+        return parse_builtin(text, email_id, subject)
+    return parse_linkedin(text, email_id, subject)
+
+
 def triage(title):
     """('main'|'stretch', reason). Title-only, so it is a sort order, not a judgment of fit."""
     t = title or ""
@@ -164,7 +259,8 @@ def plan(items, jobs, source_label="LinkedIn job alert"):
             near = [o for o in DUP.find_duplicates(rec, pool, require_later=False)
                     if "url" in o.get("_dup_via", "") or DUP.is_later(o)
                     or o.get("status") in ("Closed", "Withdrawn")
-                    or not (o.get("linkedin_job_id") or linkedin_job_id(o.get("apply_url"), o.get("posting_url")))]
+                    or (o.get("triage") != "auto-title"
+                        and not (o.get("linkedin_job_id") or linkedin_job_id(o.get("apply_url"), o.get("posting_url"))))]
             hit = near[0].get("ref") if near else None
         if hit:
             dups.append({"company": rec["company"], "role": rec["role"], "tracked_as": hit, "job_id": jid})

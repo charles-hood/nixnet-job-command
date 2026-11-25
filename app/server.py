@@ -457,7 +457,7 @@ def alerts_ingest(c, b, actor="job-alerts"):
         if eid and eid in seen and not b.get("force"):
             skipped.append(eid)
             continue
-        parsed = AL.parse_linkedin(e.get("text") or "", eid, e.get("subject") or "")
+        parsed = AL.parse_email(e.get("text") or "", eid, e.get("subject") or "")
         items.extend(parsed)
         read_ids.append((eid, len(parsed)))
     for i in items:
