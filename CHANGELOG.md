@@ -7,7 +7,8 @@ Job alerts flow into the app, and a search that dead-ended after you applied is 
 - Job-alert intake: `POST /api/alerts/ingest` takes alert email text (LinkedIn
   digests) or already-parsed roles, dedupes against every tracked role in any
   status (LinkedIn job id, apply URL, or company plus near-identical title),
-  triages by title into the apply queue or Stretch with a reason, and records
+  triages by title into the apply queue or Stretch with a reason (clearance and
+  staffing-agency titles go to Stretch), and records
   which emails it has read (`GET /api/alerts/seen`). `dry_run` previews. New
   `alert_seen` table; the old app can still open the database
 - Search fix, Apply queue and Stretch: the queue lists only roles still to apply, and the

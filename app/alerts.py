@@ -43,6 +43,8 @@ TARGET = re.compile(
     r"partner\s+(?:solutions?|engineer)|developer\s+(?:relations|advocate)|enterprise\s+(?:se|solutions)|"
     r"solution\s+(?:engineer|architect)", re.I)
 JUNIOR = re.compile(r"\b(?:intern|internship|entry[- ]level|new grad|graduate|apprentice|associate|junior|jr\.?)\b", re.I)
+CLEARANCE = re.compile(r"\b(?:classified|clearance|ts\s*/\s*sci|top secret|polygraph)\b", re.I)
+AGENCY = re.compile(r"^\s*(?:hiring|urgent(?:ly)?(?: hiring)?|immediate(?:ly)? hiring)\b[\s:-]+(?:for\b)?", re.I)
 LEADERSHIP = re.compile(r"\b(?:vice president|vp|svp|evp|chief|head of|director|manager|president|cell lead)\b", re.I)
 
 
@@ -96,6 +98,10 @@ def triage(title):
     t = title or ""
     if JUNIOR.search(t):
         return "stretch", "Entry-level or associate title. Kept in case the scope is bigger than the title."
+    if CLEARANCE.search(t):
+        return "stretch", "The title mentions a security clearance or classified work. Check you qualify before you apply."
+    if AGENCY.search(t):
+        return "stretch", "Looks like a staffing-agency post, not the employer's own listing. Find the real posting first."
     if LEADERSHIP.search(t):
         return "stretch", "Management or executive title, not the individual-contributor solutions work you target."
     if TARGET.search(t):

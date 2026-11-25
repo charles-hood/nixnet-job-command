@@ -252,5 +252,14 @@ View job: https://www.linkedin.com/comm/jobs/view/9000000004/?trackingId=jkl
         self.assertEqual([a["company"] for a in r["added"]], ["Hooli Test Co"])
 
 
+    def test_alert_triage_lanes(self):
+        AL = __import__("alerts")
+        self.assertEqual(AL.triage("Senior Solutions Architect supporting Classified programs")[0], "stretch")
+        self.assertEqual(AL.triage("Hiring for Clinical Domain Solutions & Presales")[0], "stretch")
+        self.assertEqual(AL.triage("Associate Solutions Engineer")[0], "stretch")
+        self.assertEqual(AL.triage("Forward Deployed Engineer")[0], "main")
+        self.assertEqual(AL.triage("Sr. Solutions Architect, AI Infrastructure")[0], "main")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
