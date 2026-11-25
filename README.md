@@ -196,7 +196,7 @@ Python 3.9 or newer. No packages to install.
 
 ```
 git clone <this-repo>
-cd job.command.center.nixnet
+cd nixnet-job-command
 ./setup.sh          # or: make setup
 make run            # http://127.0.0.1:8742
 ```
