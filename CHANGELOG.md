@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.6 — 2026-11-25
+
+Three community fixes from @charles-hood, merged as PRs #1 to #3. Thank you.
+
+- Config: on Python 3.9 and 3.10 the built-in config reader no longer splits quoted values on commas or cuts them at a `#` (for example `"Portland, OR"` stays one item)
+- Alerts: roles read from Dice and Built In emails are labelled "Dice job alert" and "Built In job alert" instead of "LinkedIn job alert"; a `source` sent in the ingest request still wins
+- README: the quick start `cd` matches the cloned folder name
+
 ## 0.3.5 — 2026-11-25
 
 - The Apply queue and Dashboard no longer list companies you skipped (paused). They were one banner card each and pushed the first role off the screen. Apply-limit banners (for example 3/3 used) still show. A skipped company's roles still leave the queue, the header count still says how many are paused, and Resume company stays on that company's own job page
