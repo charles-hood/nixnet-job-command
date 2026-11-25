@@ -303,6 +303,24 @@ function jobMatches(j, q) {
   const hay = (j.search || [j.ref, j.company, j.role, j.location, j.status, j.remote || "", j.jd || ""].join(" ")).toLowerCase();
   return hay.includes(String(q).trim().toLowerCase());
 }
+// Roles that match a search but are not in the list being searched (applied, closed, paused, stretch...).
+// The queue only lists "To apply" roles, so without this an applied role vanishes from its own search.
+function outsideMatches(q, inList) {
+  if (!q || !String(q).trim()) return [];
+  const have = new Set((inList || []).map(j => j.ref));
+  return STATE.jobs.filter(j => !have.has(j.ref) && jobMatches(j, q));
+}
+function outsideCard(q, inList, stretchMode) {
+  const L = outsideMatches(q, inList);
+  if (!L.length) return "";
+  const rows = L.slice(0, 12).map(j => `<div class="row small" style="margin:5px 0"><span class="ref">${esc(j.ref)}</span>${statusPill(j.status)}<a href="#/job/${esc(j.ref)}">${esc(j.company)} · ${esc(j.role)}</a>${j.date_applied ? `<span class="muted right">applied ${esc(j.date_applied)}</span>` : ""}</div>`).join("");
+  return `<div class="card" id="outsideMatches" style="margin:12px 0"><div class="row"><h3 style="margin:0">Also tracked, not in the ${stretchMode ? "stretch" : "apply"} queue (${L.length})</h3><button class="btn s right" type="button" id="openInJobs">Open all in Jobs</button></div>
+    <p class="muted small" style="margin:6px 0">The queue only lists roles still to apply. These already left it (applied, closed, paused or in the other queue).</p>${rows}${L.length > 12 ? `<div class="muted small">+${L.length - 12} more in Jobs</div>` : ""}</div>`;
+}
+function bindOutside(q) {
+  const b = $("#openInJobs");
+  if (b) b.onclick = () => { localStorage.setItem("jobsFilter", JSON.stringify({ q })); location.hash = "#/jobs"; };
+}
 function bindEscSearch(input, ondraw) {
   if (!input) return;
   input.addEventListener("input", ondraw);
@@ -601,7 +619,7 @@ function jobsView() {
     <select id="ft"><option value="">All tiers</option><option ${saved.ft === "A" ? "selected" : ""}>A</option><option ${saved.ft === "B" ? "selected" : ""}>B</option><option ${saved.ft === "C" ? "selected" : ""}>C</option></select>
     <select id="sort"><option value="rank">Sort: apply order</option><option value="fit">Fit score</option><option value="company">Company</option><option value="comp">Top of pay range</option><option value="updated">Recently updated</option></select>
     <a class="btn" href="#/data">+ Add / import</a>
-  </div><div class="card list" id="list"></div>`;
+  </div><div class="callout amber" id="hiddenNote" style="display:none;margin:0 0 12px"></div><div class="card list" id="list"></div>`;
   const draw = () => {
     const q = $("#q").value, fs = $("#fs").value, fsrc = $("#fsrc").value, ft = $("#ft").value, fst = $("#fst").value, sort = $("#sort").value;
     localStorage.setItem("jobsFilter", JSON.stringify({ q, fs, fsrc, ft, fst, sort }));
@@ -612,6 +630,10 @@ function jobsView() {
     if (sort === "comp") L.sort((a, b) => (b.comp_max || 0) - (a.comp_max || 0));
     if (sort === "updated") L.sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)));
     const mc = $("#matchCount"); if (mc) mc.textContent = `Showing ${L.length} of ${STATE.jobs.length} roles`;
+    const filtered = !!(fs || fsrc || ft || fst);
+    const hiddenN = filtered && q ? STATE.jobs.filter(j => jobMatches(j, q)).length - L.length : 0;
+    const hn = $("#hiddenNote");
+    if (hn) { hn.innerHTML = hiddenN > 0 ? `<b>${hiddenN} more match "${esc(q)}"</b> but are hidden by the filters above. <a href="#" id="clearFilters">Clear filters</a>` : ""; hn.style.display = hiddenN > 0 ? "" : "none"; const cf = $("#clearFilters"); if (cf) cf.onclick = e => { e.preventDefault(); ["fs", "fsrc", "ft", "fst"].forEach(id => { $("#" + id).value = ""; }); draw(); }; }
     $("#list").innerHTML = L.map(j => `<div class="jobrow"><span class="ref">${j.ref}</span>
       <div><a class="t" href="#/job/${j.ref}">${esc(j.company)} · ${esc(j.role)}</a>
       <div class="m">${statusPill(j.status)} ${hotBadge(j)}${stretchBadge(j)} ${isPaused(j.company) && j.status === "To apply" ? `<span class="pill">Paused</span>` : ""} ${tierTag(j.tier)} <span>Fit ${j.fit_score ?? "?"}</span><span>${esc(j.comp || "Pay not posted")}</span><span>${esc(j.location || "")}${j.remote ? " · " + esc(j.remote) : ""}</span><span>${esc(j.source || "")}</span>${j.n_questions ? `<span>${j.n_questions} form questions</span>` : ""}</div></div>
@@ -832,15 +854,16 @@ async function queue(refArg, stretchMode = false) {
     const emptyBody = stretchMode
       ? "No To apply roles are in Stretch. Weak-fit roles land here so you can still apply, and you can move any role between Stretch and the main queue from its job page."
       : (pausedN ? `${pausedN} To apply role${pausedN === 1 ? " is" : "s are"} paused by a company skip or apply limit. They are not closed and will return to the queue when the skip or limit lifts.` : "Every tracked role is applied or closed. Add a new role when you are ready for fresh leads.");
-    app.innerHTML = searchBar + policyBanners() + `<div class="card"><h1 id="pageTop" tabindex="-1">${emptyTitle}</h1><p>${emptyBody}</p></div>`;
-    bindQ();
+    app.innerHTML = searchBar + outsideCard(getQ(), all, stretchMode) + policyBanners() + `<div class="card"><h1 id="pageTop" tabindex="-1">${emptyTitle}</h1><p>${emptyBody}</p></div>`;
+    bindQ(); bindOutside(getQ());
     return;
   }
-  if (!Q.length) { app.innerHTML = searchBar + policyBanners() + `<div class="card"><h1 id="pageTop" tabindex="-1">No matches</h1><p>Press Esc to clear the search.</p></div>`; bindQ(); return; }
+  if (!Q.length) { app.innerHTML = searchBar + outsideCard(getQ(), all, stretchMode) + policyBanners() + `<div class="card"><h1 id="pageTop" tabindex="-1">No matches in the ${stretchMode ? "stretch" : "apply"} queue</h1><p>Press Esc to clear the search.</p></div>`; bindQ(); bindOutside(getQ()); return; }
   let idx = Math.max(0, Q.findIndex(j => j.ref === refArg)); const j = await api("/api/jobs/" + Q[idx].ref);
   const ans = (j.answers || []);
   app.innerHTML = `<div class="queue">
    ${searchBar}
+   ${outsideCard(getQ(), all, stretchMode)}
    ${policyBanners()}
    <div class="row small muted"><span>${stretchMode ? "Stretch queue" : "Apply queue"} · ${idx + 1} of ${Q.length}${getQ() ? ` matches (${all.length} total)` : ""}</span><span class="right">Keys: <span class="kbd">o</span> open · <span class="kbd">a</span> applied · <span class="kbd">s</span> skip · <span class="kbd">←</span><span class="kbd">→</span></span></div>
    <div class="bar" style="margin:8px 0 18px"><i style="width:${(STATE.stats.applied_today / Math.max(1, STATE.stats.goal)) * 100}%"></i></div>
@@ -863,7 +886,7 @@ async function queue(refArg, stretchMode = false) {
    <div class="row" style="margin-top:16px"><button class="btn" id="prev">← Previous</button><button class="btn warn" id="skip">Skip for now</button>${skipCompanyBtn(j.company, "btn warn")}${nlaButtons(j)}<a class="btn" href="#/job/${j.ref}">Full job page</a><button class="btn p big right" id="applied">Mark applied ✓</button></div></div>`;
   const go = d => { const n = Q[(idx + d + Q.length) % Q.length]; const dest = hashBase + "/" + n.ref; if (location.hash === dest) { route(); } else { location.hash = dest; } };
   $("#prev").onclick = () => go(-1); $("#skip").onclick = () => go(1);
-  bindQ();
+  bindQ(); bindOutside(getQ());
   bindCustomAnswers(j, "qca");
   bindWhoContacts(j);
   $("#applied").onclick = async () => {
@@ -1008,6 +1031,7 @@ function dataView() {
   <tr><td><code>POST /api/custom-answers/generate</code></td><td>Generate custom answers for every non-closed job that is missing them</td></tr>
   <tr><td><code>GET /api/duplicates</code></td><td>Audit near-duplicate jobs (add <code>?later=1</code> for Applied-or-later only)</td></tr>
   <tr><td><code>GET|POST /api/feedback</code></td><td>Feedback</td></tr>
+  <tr><td><code>POST /api/alerts/ingest</code></td><td>Job-alert emails in, roles out: parse, dedupe against every tracked role, triage to the queue or Stretch (<code>dry_run</code> to preview). <code>GET /api/alerts/seen</code> lists emails already read</td></tr>
   <tr><td><code>POST /api/import</code></td><td>Merge jobs and answers, never deletes</td></tr>
   <tr><td><code>GET /api/export.csv|json</code></td><td>Exports</td></tr>
   <tr><td><code>GET /api/history</code></td><td>Every change, newest first</td></tr>

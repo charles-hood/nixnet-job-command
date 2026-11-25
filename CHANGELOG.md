@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.3.0 — 2026-11-25
+
+Job alerts flow into the app, and a search that dead-ended after you applied is fixed.
+
+- Job-alert intake: `POST /api/alerts/ingest` takes alert email text (LinkedIn
+  digests) or already-parsed roles, dedupes against every tracked role in any
+  status (LinkedIn job id, apply URL, or company plus near-identical title),
+  triages by title into the apply queue or Stretch with a reason, and records
+  which emails it has read (`GET /api/alerts/seen`). `dry_run` previews. New
+  `alert_seen` table; the old app can still open the database
+- Search fix, Apply queue and Stretch: the queue lists only roles still to apply, and the
+  search text is remembered between visits, so searching a company you had just
+  applied to (for example "acme") showed "No matches" even though the role
+  was tracked. Both queues now show an "Also tracked, not in the queue" card
+  with every match that already left it (applied, closed, paused or in the other
+  queue), each with its status and a link, plus an "Open all in Jobs" button
+- Jobs: the status, fit, source and tier filters are remembered too. When they
+  hide roles that match your search, a note now says how many and offers
+  "Clear filters"
+- The queue's no-match page now says which queue it searched
+
 ## 0.2.0 — 2026-11-25
 
 Brings the repo up to the private Job Command Center 1.6.1 behavior so one

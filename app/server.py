@@ -8,6 +8,7 @@ Profile, proofs, fit rules and daily goal come from config and profile files.
 import base64, csv, io, json, os, re, sqlite3, sys, threading, time, uuid, datetime
 import custom_answers as CA
 import duplicates as DUP
+import alerts as AL
 import company_policy as CP
 from config import CFG, VERSION
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
@@ -209,6 +210,7 @@ def init():
     CREATE TABLE IF NOT EXISTS feedback(id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT, kind TEXT, text TEXT, ref TEXT);
     CREATE TABLE IF NOT EXISTS settings(k TEXT PRIMARY KEY, v TEXT);
     CREATE TABLE IF NOT EXISTS meta(k TEXT PRIMARY KEY, v TEXT);
+    CREATE TABLE IF NOT EXISTS alert_seen(email_id TEXT PRIMARY KEY, ts TEXT, found INTEGER DEFAULT 0, added INTEGER DEFAULT 0);
     """)
     ensure_contacts_table(c)
     CP.ensure_defaults(c)
@@ -442,6 +444,45 @@ def generate_missing_custom(c, force=False, refs=None, actor="app"):
         generated.append(ref)
     c.commit()
     return {"generated": generated, "skipped": skipped, "count": len(generated)}
+
+def alerts_ingest(c, b, actor="job-alerts"):
+    """Add roles from job-alert emails. Body: {"emails":[{"id","subject","text"}], "items":[parsed roles],
+    "dry_run":bool, "force":bool}. Dedupes against every tracked role (any status), triages by title
+    (main queue or Stretch), remembers which emails it has read, and never deletes or changes a tracked role."""
+    dry = bool(b.get("dry_run"))
+    seen = {r[0] for r in c.execute("SELECT email_id FROM alert_seen")}
+    items, read_ids, skipped = [dict(i) for i in (b.get("items") or []) if isinstance(i, dict)], [], []
+    for e in b.get("emails") or []:
+        eid = str(e.get("id") or "")
+        if eid and eid in seen and not b.get("force"):
+            skipped.append(eid)
+            continue
+        parsed = AL.parse_linkedin(e.get("text") or "", eid, e.get("subject") or "")
+        items.extend(parsed)
+        read_ids.append((eid, len(parsed)))
+    for i in items:
+        i.setdefault("email_id", "")
+    add, dups = AL.plan(items, all_jobs(c, light=False), b.get("source") or "LinkedIn job alert")
+    out = {"dry_run": dry, "emails_read": len(read_ids), "emails_already_read": skipped, "roles_found": len(items),
+           "duplicates": dups, "added": []}
+    if not dry and add:
+        seed_import(c, {"jobs": add}, actor=actor)
+    out["added"] = [{"ref": r.get("ref"), "company": r["company"], "role": r["role"],
+                     "lane": "stretch" if r.get("stretch") else "main"} for r in add]
+    if not dry:
+        per = {}
+        for r in add:
+            per[r.get("alert_email_id")] = per.get(r.get("alert_email_id"), 0) + 1
+        for eid, n in read_ids:
+            if eid:
+                c.execute("INSERT OR REPLACE INTO alert_seen(email_id,ts,found,added) VALUES(?,?,?,?)", (eid, now(), n, per.get(eid, 0)))
+        for eid in {i["email_id"] for i in items if i.get("email_id")} - {r[0] for r in read_ids}:
+            c.execute("INSERT OR IGNORE INTO alert_seen(email_id,ts,found,added) VALUES(?,?,?,?)", (eid, now(), 0, per.get(eid, 0)))
+        c.commit()
+    out["main"] = sum(1 for r in out["added"] if r["lane"] == "main")
+    out["stretch"] = len(out["added"]) - out["main"]
+    return out
+
 
 def patch_job(c, ref, body, actor="web"):
     row = c.execute("SELECT data FROM jobs WHERE ref=?", (ref,)).fetchone()
@@ -844,6 +885,8 @@ class H(BaseHTTPRequestHandler):
             return self.send(200, CP.company_policy(c, jobs))
         if p == "/api/answers":
             return self.send(200, [answer_row(r) for r in c.execute("SELECT * FROM answers ORDER BY sort, category, question")])
+        if p == "/api/alerts/seen":
+            return self.send(200, {"email_ids": [r[0] for r in c.execute("SELECT email_id FROM alert_seen ORDER BY ts DESC")]})
         if p == "/api/duplicates":
             jobs = all_jobs(c, light=False)
             later_only = (q.get("later") or ["0"])[0] == "1"
@@ -978,6 +1021,8 @@ class H(BaseHTTPRequestHandler):
                 c.execute("INSERT INTO settings(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v", (k, json.dumps(v)))
             c.commit()
             return self.send(200, {"ok": True})
+        if p == "/api/alerts/ingest" and method == "POST":
+            return self.send(200, alerts_ingest(c, b, actor if actor != "web" else "job-alerts"))
         if p == "/api/import" and method == "POST":
             # Accepts {"jobs":[...], "answers":[...]} (e.g. a seed refresh or an export). Never deletes.
             return self.send(200, seed_import(c, b, actor=actor, overwrite=bool(b.get("overwrite"))))

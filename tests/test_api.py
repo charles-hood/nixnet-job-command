@@ -165,5 +165,92 @@ class ApiTests(unittest.TestCase):
             config.CFG.reload()
 
 
+    # ---- job-alert intake ----
+    ALERT = """Your job alert for Solutions Engineer in United States
+Forward Deployed Engineer
+Initrode Labs
+Austin, TX
+
+This company is actively hiring
+View job: https://www.linkedin.com/comm/jobs/view/9000000001/?trackingId=abc%3D%3D&refId=xyz&trk=eml-1
+
+---------------------------------------------------------
+
+Senior Accountant
+Globex Foods
+Chicago, IL
+Fast growing
+$80K/yr - $95K/yr
+View job: https://www.linkedin.com/comm/jobs/view/9000000002/?trackingId=def
+
+---------------------------------------------------------
+
+Director of Solutions Engineering
+Initrode Labs
+Remote
+1 connection
+View job: https://www.linkedin.com/comm/jobs/view/9000000003/?trackingId=ghi
+
+---------------------------------------------------------
+
+See all jobs on LinkedIn: https://www.linkedin.com/comm/jobs/search-results/?keywords=x
+Manage your job alerts: https://www.linkedin.com/comm/jobs/alerts
+"""
+    FACET = """Expand your search
+
+Remote jobs
+https://www.linkedin.com/comm/jobs/search-results/?keywords=Senior+Solutions+Architect
+
+Senior Solutions Architect - Presales
+Umbrella Storage
+United States
+View job: https://www.linkedin.com/comm/jobs/view/9000000004/?trackingId=jkl
+"""
+
+    def _ingest(self, body):
+        return self._send("POST", "/api/alerts/ingest", body)[1]
+
+    def test_alert_parser_reads_blocks_badges_and_headings(self):
+        AL = __import__("alerts")
+        got = AL.parse_linkedin(self.ALERT, "e1")
+        self.assertEqual([g["job_id"] for g in got], ["9000000001", "9000000002", "9000000003"])
+        self.assertEqual((got[0]["title"], got[0]["company"], got[0]["location"]), ("Forward Deployed Engineer", "Initrode Labs", "Austin, TX"))
+        self.assertEqual(got[0]["alert"], "Solutions Engineer in United States")
+        self.assertEqual(got[1]["comp"], "$80K/yr - $95K/yr")
+        self.assertEqual(got[2]["location"], "Remote")          # "1 connection" badge is not a location
+        f = AL.parse_linkedin(self.FACET, "e2")
+        self.assertEqual([(g["title"], g["company"]) for g in f], [("Senior Solutions Architect - Presales", "Umbrella Storage")])
+
+    def test_alert_ingest_triages_dedupes_and_is_idempotent(self):
+        dry = self._ingest({"emails": [{"id": "t-e1", "text": self.ALERT}], "dry_run": True})
+        self.assertTrue(dry["dry_run"]); self.assertEqual(len(dry["added"]), 3)
+        _, before = self.get("/api/jobs")
+        self.assertFalse(any(j.get("company") == "Initrode Labs" for j in before))   # dry run wrote nothing
+        r = self._ingest({"emails": [{"id": "t-e1", "text": self.ALERT}]})
+        lanes = {a["role"]: a["lane"] for a in r["added"]}
+        self.assertEqual(lanes["Forward Deployed Engineer"], "main")
+        self.assertEqual(lanes["Senior Accountant"], "stretch")
+        self.assertEqual(lanes["Director of Solutions Engineering"], "stretch")
+        _, jobs = self.get("/api/jobs")
+        fde = next(j for j in jobs if j["role"] == "Forward Deployed Engineer" and j["company"] == "Initrode Labs")
+        self.assertEqual((fde["status"], fde["source"], fde["apply_url"]), ("To apply", "LinkedIn job alert", "https://www.linkedin.com/jobs/view/9000000001/"))
+        self.assertTrue(next(j for j in jobs if j["role"] == "Senior Accountant")["stretch"])
+        # Same email again: skipped. Same roles in a new email: duplicates, nothing added.
+        again = self._ingest({"emails": [{"id": "t-e1", "text": self.ALERT}]})
+        self.assertEqual((again["emails_read"], again["emails_already_read"], again["added"]), (0, ["t-e1"], []))
+        twice = self._ingest({"emails": [{"id": "t-e1b", "text": self.ALERT}]})
+        self.assertEqual((twice["added"], len(twice["duplicates"])), ([], 3))
+        self.assertIn("t-e1", self.get("/api/alerts/seen")[1]["email_ids"])
+
+    def test_alert_items_dedupe_against_existing_roles_by_company_and_title(self):
+        _, jobs = self.get("/api/jobs")
+        have = jobs[0]
+        r = self._ingest({"items": [{"title": have["role"], "company": have["company"], "location": "x", "job_id": "9000000099"},
+                                    {"title": "Solutions Engineer", "company": "Hooli Test Co", "location": "Remote", "source": "dice", "url": "https://www.dice.com/job-detail/zzz"}],
+                          "dry_run": True})
+        self.assertEqual([d["tracked_as"] for d in r["duplicates"]], [have["ref"]])
+        self.assertEqual([a["company"] for a in r["added"]], ["Hooli Test Co"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

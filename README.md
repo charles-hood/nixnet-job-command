@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.2.0-7ff9bc?style=flat-square&labelColor=070707" alt="0.2.0">
+  <img src="https://img.shields.io/badge/version-0.3.0-7ff9bc?style=flat-square&labelColor=070707" alt="0.3.0">
   <img src="https://img.shields.io/badge/python-3.9%2B-0c9793?style=flat-square&labelColor=070707" alt="Python 3.9+">
   <img src="https://img.shields.io/badge/deps-stdlib%20only-17a07e?style=flat-square&labelColor=070707" alt="stdlib only">
   <img src="https://img.shields.io/badge/license-MIT-52ca9a?style=flat-square&labelColor=070707" alt="MIT">
@@ -91,6 +91,15 @@ Your agents (or you) can pull from all of this:
 - **X:** hiring posts and threads you would otherwise lose in the timeline.
 - **Company career boards:** Greenhouse, Ashby, Lever, and the rest. The ATS is recorded on the card so you know the form you are walking into.
 - **Startup lists and outlier roundups:** batch imports, scored and queued the same as a single link.
+
+**Job alerts, handled.** Alert emails (LinkedIn digests today) go straight in. Whoever has your mail hands the text to `POST /api/alerts/ingest`; the app parses each role, drops the ones you already track (same LinkedIn job id, same URL, or same company plus a near-identical title, in any status, so a role you closed never comes back), and triages the rest by title. Roles that look like your target work (solutions, forward deployed, applied AI) join the apply queue; everything else lands in Stretch with a reason. It remembers which emails it has read, so running it again is safe, and `dry_run` shows what would happen first.
+
+```bash
+curl -s localhost:8742/api/alerts/ingest -d '{"emails":[{"id":"<gmail id>","subject":"...","text":"<email body>"}],"dry_run":true}'
+curl -s localhost:8742/api/alerts/seen        # email ids already read
+```
+
+Roles from alerts are triaged by title only and left unscored, so a person or agent should read the posting before spending an application on one.
 
 Every inbound role hits the same pipeline: sweep, **dedupe** (same URL, or same company plus a near-identical title), **fit-score**, then **queue or Stretch**. Nothing is applied for you. Nothing is messaged for you.
 
@@ -242,7 +251,7 @@ The hexagon and wordmark in `brand/` are the official nixfred marks, copied unmo
 
 ## Status
 
-v0.2.0. Python 3.9+ and the standard library only. Issues and pull requests are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md). The screenshots above use the fictional example seed, not real people or companies.
+v0.3.0. Python 3.9+ and the standard library only. Issues and pull requests are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md). The screenshots above use the fictional example seed, not real people or companies.
 
 ## License
 
