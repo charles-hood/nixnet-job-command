@@ -182,7 +182,7 @@ function policyBanners(forCompany) {
   const companies = Object.values((STATE.policy && STATE.policy.companies) || {});
   const list = forCompany
     ? companies.filter(c => coKey(c.company) === coKey(forCompany) && c.banner)
-    : companies.filter(c => c.banner && (c.paused || c.at_cap));
+    : companies.filter(c => c.banner && c.at_cap && !c.skip); // skipped companies are not listed (screen space); at-cap limits stay
   return list.map(c => {
     const resume = c.skip ? ` <button class="btn s" type="button" data-resume-co="${esc(c.company)}">Resume company</button>` : "";
     const policy = c.policy_url ? ` <a target="_blank" rel="noopener" href="${esc(c.policy_url)}">policy ↗</a>` : "";

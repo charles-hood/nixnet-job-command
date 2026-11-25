@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.5 — 2026-11-25
+
+- The Apply queue and Dashboard no longer list companies you skipped (paused). They were one banner card each and pushed the first role off the screen. Apply-limit banners (for example 3/3 used) still show. A skipped company's roles still leave the queue, the header count still says how many are paused, and Resume company stays on that company's own job page
+
 ## 0.3.4 — 2026-11-25
 
 - The space-and-punctuation-ignoring search pass now runs only when the search text itself has a space or punctuation, so a short word such as "neo" no longer matches across word boundaries
