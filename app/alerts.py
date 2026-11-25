@@ -158,7 +158,13 @@ def plan(items, jobs, source_label="LinkedIn job alert"):
         jid = rec.get("linkedin_job_id", "")
         hit = ids.get(jid) if jid else None
         if not hit:
-            near = DUP.find_duplicates(rec, pool, require_later=False)
+            # A LinkedIn job id is a posting. Two postings with the same title (one per city) are two roles
+            # and both appear. A title match only counts as "already have it" when the tracked role is one you
+            # applied to or closed, has the same apply URL, or came from a source with no LinkedIn id to compare.
+            near = [o for o in DUP.find_duplicates(rec, pool, require_later=False)
+                    if "url" in o.get("_dup_via", "") or DUP.is_later(o)
+                    or o.get("status") in ("Closed", "Withdrawn")
+                    or not (o.get("linkedin_job_id") or linkedin_job_id(o.get("apply_url"), o.get("posting_url")))]
             hit = near[0].get("ref") if near else None
         if hit:
             dups.append({"company": rec["company"], "role": rec["role"], "tracked_as": hit, "job_id": jid})

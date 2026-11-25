@@ -261,5 +261,20 @@ View job: https://www.linkedin.com/comm/jobs/view/9000000004/?trackingId=jkl
         self.assertEqual(AL.triage("Sr. Solutions Architect, AI Infrastructure")[0], "main")
 
 
+    def test_alert_same_title_different_postings_both_appear(self):
+        AL = __import__("alerts")
+        jobs = [{"ref": "J-900", "company": "Acme Cloud", "role": "Solutions Architect", "status": "Applied", "date_applied": "2026-11-20"},
+                {"ref": "J-901", "company": "Curated Co", "role": "Field Engineer", "status": "To apply", "apply_url": "https://jobs.example.com/curated/1"},
+                {"ref": "J-902", "company": "Roads Inc", "role": "Solutions Engineer", "status": "To apply", "linkedin_job_id": "111"}]
+        items = [{"title": "Forward Deployed Engineer", "company": "Fonzi Test", "location": "New York", "job_id": "201"},
+                 {"title": "Forward Deployed Engineer", "company": "Fonzi Test", "location": "Austin", "job_id": "202"},
+                 {"title": "Solutions Architect", "company": "Acme Cloud", "location": "Remote", "job_id": "203"},     # already applied
+                 {"title": "Field Engineer", "company": "Curated Co", "location": "Remote", "job_id": "204"},         # curated role, no LinkedIn id to compare
+                 {"title": "Solutions Engineer", "company": "Roads Inc", "location": "Denver", "job_id": "112"}]      # another posting of an open alert role
+        add, dups = AL.plan(items, jobs)
+        self.assertEqual(sorted(a["linkedin_job_id"] for a in add), ["112", "201", "202"])
+        self.assertEqual(sorted(d["tracked_as"] for d in dups), ["J-900", "J-901"])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

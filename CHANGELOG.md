@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.1 — 2026-11-25
+
+- Job alerts: a LinkedIn job id is now authoritative. Two postings with the same
+  title (one per city) are two roles and both appear; before, the
+  company-plus-title rule folded them into one. A title match still counts as
+  "already tracked" when the tracked role is one you applied to or closed, has
+  the same apply URL, or came from a source with no LinkedIn id to compare
+
 ## 0.3.0 — 2026-11-25
 
 Job alerts flow into the app, and a search that dead-ended after you applied is fixed.
