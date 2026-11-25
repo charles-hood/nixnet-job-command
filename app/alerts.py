@@ -204,7 +204,15 @@ def triage(title):
     return "stretch", "The title does not name your target work (solutions, forward deployed, applied AI). Read the posting before you spend an application."
 
 
-def role_record(item, source_label="LinkedIn job alert"):
+def default_source_label(item):
+    """'Dice job alert', 'Built In job alert'. LinkedIn when the role has a LinkedIn job id or names no source."""
+    src = (item.get("source") or "").strip()
+    if item.get("job_id") or not src:
+        return "LinkedIn job alert"
+    return "%s job alert" % src.title()
+
+
+def role_record(item, source_label=None):
     jid = item.get("job_id") or ""
     url = item.get("url") or (job_link(jid) if jid else "")
     lane, reason = triage(item.get("title"))
@@ -217,7 +225,7 @@ def role_record(item, source_label="LinkedIn job alert"):
         "fit_score": 65 if lane == "main" else 40,
         "apply_url": url, "posting_url": url,
         "ats": "LinkedIn" if jid else (item.get("source") or "").title(),
-        "source": source_label, "source_group": "Job alerts",
+        "source": source_label or default_source_label(item), "source_group": "Job alerts",
         "alert_name": item.get("alert") or "", "alert_email_id": item.get("email_id") or "",
         "triage": "auto-title",
         "fit_notes": "Added from a job alert and triaged by title only. Not scored: read the posting before you spend an application on it.",
@@ -241,7 +249,7 @@ def tracked_index(jobs):
     return ids
 
 
-def plan(items, jobs, source_label="LinkedIn job alert"):
+def plan(items, jobs, source_label=None):
     """Split alert items into roles to add and duplicates already tracked. Pure: touches no database."""
     ids = tracked_index(jobs)
     pool = [dict(j) for j in jobs]
