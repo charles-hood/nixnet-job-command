@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  launchd user agent for NixNet Job Command.
+
+  Replace __INSTALL_DIR__ with the absolute path of your clone, then:
+    cp contrib/com.nixfred.nixnet-job-command.plist ~/Library/LaunchAgents/
+    # edit the copy, then:
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.nixfred.nixnet-job-command.plist
+
+  Default bind is 127.0.0.1 only.
+-->
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.nixfred.nixnet-job-command</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/python3</string>
+    <string>__INSTALL_DIR__/app/server.py</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>NJC_PORT</key><string>8742</string>
+    <key>NJC_BIND</key><string>127.0.0.1</string>
+    <key>NJC_DATA</key><string>__INSTALL_DIR__/data</string>
+    <key>NJC_PROFILE</key><string>__INSTALL_DIR__/profile.json</string>
+  </dict>
+  <key>WorkingDirectory</key><string>__INSTALL_DIR__</string>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>__INSTALL_DIR__/logs/njc.out.log</string>
+  <key>StandardErrorPath</key><string>__INSTALL_DIR__/logs/njc.err.log</string>
+</dict></plist>

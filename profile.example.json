@@ -1,0 +1,200 @@
+{
+  "display_name": "Alex Rivera",
+  "legal_name": "Alex Rivera",
+  "brand": "nixfred",
+  "assistant_name": "your assistant",
+  "identity_vault": "Job Search",
+  "timezone": "America/Los_Angeles",
+  "location": "Portland, Oregon",
+  "location_note": "I work remotely across U.S. time zones and I am ready to travel when a customer needs me on site.",
+  "daily_goal": 5,
+  "headline": "Customer-facing engineer for developer platforms and AI infrastructure.",
+  "why_looking": "I am looking for the next role where I can sit with customers, learn how they want to run a platform, and help them get from a first proof to something they will actually operate. I like work that mixes technical depth with clear writing and a little showmanship.",
+  "cover_greeting": "Hello,",
+  "cover_close": "Thank you for your time. I would welcome a conversation.",
+  "proud_project": "The project I am proudest of is HarborCLI, an open source toolkit I built to stand up a private inference stack on a developer's laptop and then promote the same config into a shared environment. It turned a weekend of yak shaving into a path a teammate could follow in an afternoon.",
+  "ai_use": "I use AI the way I use a sharp junior teammate: it drafts, it searches, and it reminds me of the boring parts, but I read every line before it goes to a customer or into a repository. I also build small agents with written rules and a human approval step, so the model never sends or merges on its own.",
+  "shipped": "I have written and shipped production software for internal platforms and open source tools, including APIs, CLI installers, and a small web app that a customer team still uses to track their own rollouts.",
+  "llm_agents": "I have built and run LLM-based agents with tool use, memory, and a human approval gate. The useful part is not the demo. It is the written rules, the logs, and the moment a person still has to say yes.",
+  "open_source": "I maintain HarborCLI and I contribute docs and examples to the tools I use in the field. Open source is how I learn a product well enough to teach it.",
+  "teaching": "I like teaching developers with short field guides and working labs, not slide decks. If I cannot run the path myself, I do not publish it.",
+  "client_facing": "Most of my week is customer-facing: discovery calls, architecture reviews, proofs of concept, and the awkward middle where a demo has to become an environment someone will keep.",
+  "remote": "I have worked remotely with customers and teammates across U.S. time zones. I keep written notes, I show up on time, and I write the recap so nobody has to reconstruct the meeting from memory.",
+  "additional": "I am authorized to work in the United States and I can start on a normal notice period.",
+  "skills": [
+    "Python",
+    "Linux",
+    "Kubernetes",
+    "Terraform",
+    "AWS",
+    "GCP",
+    "Postgres",
+    "observability",
+    "networking",
+    "LLM inference",
+    "developer platforms",
+    "technical writing"
+  ],
+  "proofs": {
+    "harborcli": "I designed and shipped HarborCLI, a small open source toolkit that stands up a private inference stack and then promotes the same config into a shared environment. It is the cleanest example I have of turning a hard platform problem into something a teammate can actually run.",
+    "field_guide": "I write field guides and hands-on labs for developer platforms. The format is always the same: a real path, a working example, and the sharp edges written down so the next person does not have to find them the hard way.",
+    "customer_poc": "At Northwind Edge I led customer proofs of concept for a platform rollout, from the first architecture sketch to a running environment the account team could hand to operations. The win was not the slide. It was the moment the customer could run it without me.",
+    "agents": "I run a small internal agent with written rules, memory, and a human approval step. It drafts and files work, and a person still has to say yes before anything leaves the building.",
+    "teaching": "I have given workshops and office hours for customer engineers and developers adopting a new platform, and I measure success by whether they can repeat the path the next week without me."
+  },
+  "default_proofs": [
+    "customer_poc",
+    "harborcli",
+    "field_guide"
+  ],
+  "proofs_by_kind": {
+    "se": [
+      "customer_poc",
+      "harborcli",
+      "field_guide"
+    ],
+    "sa": [
+      "customer_poc",
+      "harborcli",
+      "field_guide"
+    ],
+    "fde": [
+      "harborcli",
+      "agents",
+      "customer_poc"
+    ],
+    "devrel": [
+      "field_guide",
+      "teaching",
+      "harborcli"
+    ],
+    "ce": [
+      "customer_poc",
+      "teaching",
+      "field_guide"
+    ]
+  },
+  "proofs_by_category": {
+    "devtools": [
+      "field_guide",
+      "harborcli",
+      "teaching"
+    ],
+    "ai": [
+      "agents",
+      "harborcli",
+      "customer_poc"
+    ],
+    "ai-infra": [
+      "harborcli",
+      "customer_poc",
+      "agents"
+    ],
+    "cloud": [
+      "customer_poc",
+      "harborcli",
+      "field_guide"
+    ],
+    "edge": [
+      "customer_poc",
+      "harborcli",
+      "field_guide"
+    ],
+    "observability": [
+      "field_guide",
+      "customer_poc",
+      "harborcli"
+    ]
+  },
+  "company_hooks": {
+    "Acme Cloud": "Acme Cloud is building the kind of developer platform I already want to spend my days on: paved paths, honest defaults, and a product that gets out of the way once a team is running.",
+    "Globex AI": "Globex AI sits at the uncomfortable intersection of inference and real customers, which is exactly the work I like: making a model useful in someone else's environment, not only in a demo.",
+    "Northwind Edge": "I already know Northwind Edge from the customer side of a platform rollout, and I want to be on the team that helps the next account get there faster.",
+    "Initech Platform": "Initech Platform is a developer experience product, and I care about that craft: docs, labs, and the last mile that turns a feature into a habit.",
+    "Umbrella DevTools": "Umbrella DevTools is the kind of toolchain I would actually use, and a customer engineer seat is a chance to bring that into real teams.",
+    "Stark Observability": "Stark Observability is how teams see what they just shipped, and I have spent enough nights in logs to care about making that path kinder."
+  },
+  "role_hooks": {
+    "se": "A solutions engineer seat is the work I already do: discover, design, prove, and then stay close until the customer can run it.",
+    "sa": "A solutions architect seat lets me go deep on the design and still stay in the room with the customer who has to live with it.",
+    "fde": "A forward deployed or field engineer role puts me inside the customer's environment, which is where the real constraints show up.",
+    "devrel": "A developer relations role is teaching with working examples, not slogans, and that is the writing and lab work I already enjoy.",
+    "ce": "A customer engineer role is hands-on enablement, and I like the mix of technical depth and clear explanation.",
+    "default": "This is customer-facing platform work, and that is the shape of role I want."
+  },
+  "product_use": {
+    "Acme Cloud": "I have used Acme Cloud in labs and personal projects to stand up preview environments, and I like how quickly a new service becomes something you can show a teammate.",
+    "Stark Observability": "I have used Stark-style observability stacks to trace a slow request across services, and I would not invent deeper production credentials than I have."
+  },
+  "fit": {
+    "min_base_pay": 150000,
+    "locations": [
+      "Remote US",
+      "Portland, OR"
+    ],
+    "kinds": [
+      "SE",
+      "SA",
+      "FDE",
+      "DevRel",
+      "Customer Engineer"
+    ],
+    "notes": "Example fit rules only. Change them to match your search."
+  },
+  "identity": {
+    "status": "Example identity for a first run. Replace every field with your own before you apply anywhere.",
+    "identities": [
+      {
+        "name": "Alex Rivera",
+        "use": "Default legal name for most application forms."
+      },
+      {
+        "name": "A. Rivera",
+        "use": "Shorter variant for forms that fight a two-word first name."
+      }
+    ],
+    "fields": [
+      {
+        "label": "Full name",
+        "value": "Alex Rivera"
+      },
+      {
+        "label": "Email",
+        "value": "alex.rivera@example.com"
+      },
+      {
+        "label": "Phone",
+        "value": "+1-555-0100"
+      },
+      {
+        "label": "Location",
+        "value": "Portland, OR"
+      },
+      {
+        "label": "Address",
+        "value": "123 Example Street, Springfield, OR 97403"
+      },
+      {
+        "label": "LinkedIn",
+        "value": "https://www.linkedin.com/in/example-alex-rivera"
+      },
+      {
+        "label": "GitHub",
+        "value": "https://github.com/example"
+      },
+      {
+        "label": "Portfolio",
+        "value": "https://example.com/alex-rivera"
+      },
+      {
+        "label": "Work authorization",
+        "value": "Authorized to work in the United States"
+      }
+    ],
+    "steps": [
+      "Create an Identity in 1Password with your legal name, email, phone, address, and links.",
+      "Add variants only when a form cannot accept your default name.",
+      "Click the first field of an application and let 1Password fill it. You still review and submit."
+    ]
+  }
+}

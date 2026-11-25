@@ -1,0 +1,461 @@
+{
+  "generated_at": "example-0.1.0",
+  "shift_dates_to_today": true,
+  "date_anchor": "2026-11-25",
+  "jobs": [
+    {
+      "ref": "J-001",
+      "company": "Acme Cloud",
+      "role": "Senior Solutions Engineer",
+      "kind": "se",
+      "category": "devtools",
+      "status": "To apply",
+      "tier": "A",
+      "fit_score": 90,
+      "queue_rank": 1,
+      "location": "Remote, United States",
+      "remote": "US remote",
+      "comp": "$180,000-$220,000",
+      "comp_max": 220000,
+      "source": "example seed",
+      "source_group": "example",
+      "apply_url": "https://jobs.example.com/acme-cloud/senior-solutions-engineer",
+      "posting_url": "https://jobs.example.com/acme-cloud/senior-solutions-engineer",
+      "ats": "greenhouse",
+      "posted": "about 1 week ago",
+      "created_at": "2026-11-19T09:00:00",
+      "skills": [
+        "Python",
+        "AWS",
+        "Kubernetes",
+        "developer platforms"
+      ],
+      "fit_notes": "Customer-facing platform role, remote US, pay in range. Example job only.",
+      "gaps": "No public Terraform requirement in the posting.",
+      "jd": "Acme Cloud is hiring a Senior Solutions Engineer to help teams adopt our developer platform. You will run discovery, design architecture, lead proofs of concept, and write clear follow-ups. Experience with cloud, Kubernetes, and teaching developers is a plus. This is a full-time remote US role.",
+      "questions": [
+        {
+          "label": "Why do you want to work at Acme Cloud?"
+        },
+        {
+          "label": "Tell us about a project you are proud of."
+        },
+        {
+          "label": "How do you use AI in your work today?"
+        }
+      ],
+      "answers": []
+    },
+    {
+      "ref": "J-002",
+      "company": "Globex AI",
+      "role": "Field Deployment Engineer",
+      "kind": "fde",
+      "category": "ai-infra",
+      "status": "To apply",
+      "tier": "A",
+      "fit_score": 88,
+      "queue_rank": 2,
+      "location": "Remote, United States",
+      "remote": "US remote",
+      "comp": "$200,000-$250,000",
+      "comp_max": 250000,
+      "source": "example seed",
+      "source_group": "example",
+      "apply_url": "https://jobs.example.com/globex-ai/field-deployment-engineer",
+      "posting_url": "https://jobs.example.com/globex-ai/field-deployment-engineer",
+      "ats": "ashby",
+      "posted": "3 days ago",
+      "created_at": "2026-11-19T10:00:00",
+      "skills": [
+        "LLM inference",
+        "Python",
+        "Linux",
+        "customer-facing"
+      ],
+      "fit_notes": "Forward deployed AI role with enterprise customers.",
+      "gaps": "GPU cluster operations is a growth area.",
+      "jd": "Globex AI is hiring a Field Deployment Engineer to land our inference platform in customer environments. You will work on site or remotely with the customer's platform team, wire up models, and leave behind something they can operate. Experience with LLM inference, Linux, and customer-facing work is required.",
+      "questions": [
+        {
+          "label": "What relevant experience do you bring to this role?"
+        },
+        {
+          "label": "Have you worked in a remote, async environment?"
+        }
+      ]
+    },
+    {
+      "ref": "J-003",
+      "company": "Northwind Edge",
+      "role": "Staff Solutions Architect",
+      "kind": "sa",
+      "category": "edge",
+      "status": "Applied",
+      "date_applied": "2026-11-23",
+      "receipt_url": "https://mail.example.com/receipt/nw-003",
+      "gmail_receipt_url": "https://mail.example.com/receipt/nw-003",
+      "tier": "A",
+      "fit_score": 86,
+      "queue_rank": 3,
+      "location": "Portland, OR or Remote US",
+      "remote": "hybrid / remote US",
+      "comp": "$195,000-$230,000",
+      "comp_max": 230000,
+      "source": "example seed",
+      "source_group": "example",
+      "apply_url": "https://jobs.example.com/northwind-edge/staff-solutions-architect",
+      "posting_url": "https://jobs.example.com/northwind-edge/staff-solutions-architect",
+      "ats": "lever",
+      "posted": "2 weeks ago",
+      "created_at": "2026-11-19T11:00:00",
+      "skills": [
+        "architecture",
+        "networking",
+        "Kubernetes"
+      ],
+      "fit_notes": "Staff SA seat at a company already in the example profile.",
+      "gaps": "",
+      "jd": "Northwind Edge is hiring a Staff Solutions Architect to lead technical designs for our edge platform. You will partner with sales, write reference architectures, and help customers go from a first cluster to a production rollout.",
+      "questions": []
+    },
+    {
+      "ref": "J-004",
+      "company": "Initech Platform",
+      "role": "Senior Developer Advocate",
+      "kind": "devrel",
+      "category": "devtools",
+      "status": "To apply",
+      "stretch": true,
+      "stretch_reason": "Pay band starts below the example fit rule, and the role is heavier on conference travel than a core SE/SA seat.",
+      "tier": "B",
+      "fit_score": 70,
+      "queue_rank": 20,
+      "location": "Remote, United States",
+      "remote": "US remote",
+      "comp": "$140,000-$175,000",
+      "comp_max": 175000,
+      "source": "example seed",
+      "source_group": "example",
+      "apply_url": "https://jobs.example.com/initech-platform/senior-developer-advocate",
+      "posting_url": "https://jobs.example.com/initech-platform/senior-developer-advocate",
+      "ats": "greenhouse",
+      "posted": "5 days ago",
+      "created_at": "2026-11-20T09:30:00",
+      "skills": [
+        "technical writing",
+        "developer platforms",
+        "Python"
+      ],
+      "fit_notes": "Good work, lighter pay. Kept in Stretch so it is not dropped.",
+      "gaps": "Compensation is below the example minimum.",
+      "jd": "Initech Platform is hiring a Senior Developer Advocate to write labs, give talks, and help developers get started. You will own tutorials, sample apps, and a public backlog of sharp edges.",
+      "questions": [
+        {
+          "label": "What is the best thing you have made for teaching developers?"
+        }
+      ]
+    },
+    {
+      "ref": "J-005",
+      "company": "Umbrella DevTools",
+      "role": "Customer Engineer",
+      "kind": "ce",
+      "category": "devtools",
+      "status": "Interview scheduled",
+      "date_applied": "2026-11-20",
+      "receipt_url": "https://mail.example.com/receipt/umb-005",
+      "gmail_receipt_url": "https://mail.example.com/receipt/umb-005",
+      "interview_at": "2026-12-02T13:00:00",
+      "interview_minutes": 45,
+      "interview_with": "Jordan Lee, Head of Customer Engineering",
+      "tier": "A",
+      "fit_score": 84,
+      "queue_rank": 4,
+      "location": "Remote, United States",
+      "remote": "US remote",
+      "comp": "$170,000-$200,000",
+      "comp_max": 200000,
+      "source": "example seed",
+      "source_group": "example",
+      "apply_url": "https://jobs.example.com/umbrella-devtools/customer-engineer",
+      "posting_url": "https://jobs.example.com/umbrella-devtools/customer-engineer",
+      "ats": "ashby",
+      "posted": "3 weeks ago",
+      "created_at": "2026-11-19T08:00:00",
+      "skills": [
+        "developer platforms",
+        "technical writing",
+        "customer-facing"
+      ],
+      "fit_notes": "Customer engineer seat, interview on the calendar.",
+      "gaps": "",
+      "jd": "Umbrella DevTools is hiring a Customer Engineer to onboard new teams, run workshops, and feed product what you learn in the field.",
+      "questions": []
+    },
+    {
+      "ref": "J-006",
+      "company": "Stark Observability",
+      "role": "Solutions Engineer",
+      "kind": "se",
+      "category": "observability",
+      "status": "Applied",
+      "date_applied": "2026-11-25",
+      "receipt_url": "https://mail.example.com/receipt/stark-006",
+      "gmail_receipt_url": "https://mail.example.com/receipt/stark-006",
+      "tier": "A",
+      "fit_score": 82,
+      "queue_rank": 5,
+      "location": "Remote, United States",
+      "remote": "US remote",
+      "comp": "$175,000-$210,000",
+      "comp_max": 210000,
+      "source": "example seed",
+      "source_group": "example",
+      "apply_url": "https://jobs.example.com/stark-observability/solutions-engineer",
+      "posting_url": "https://jobs.example.com/stark-observability/solutions-engineer",
+      "ats": "greenhouse",
+      "posted": "1 week ago",
+      "created_at": "2026-11-21T12:00:00",
+      "skills": [
+        "observability",
+        "Python",
+        "customer-facing"
+      ],
+      "fit_notes": "Applied on the anchor day so the Progress graph has a bar.",
+      "gaps": "",
+      "jd": "Stark Observability is hiring a Solutions Engineer to help teams see what they just shipped. You will demo tracing, build proofs, and write clear recaps.",
+      "questions": [
+        {
+          "label": "Have you used our product?"
+        }
+      ]
+    },
+    {
+      "ref": "J-007",
+      "company": "Hooli Compute",
+      "role": "Principal Solutions Architect",
+      "kind": "sa",
+      "category": "cloud",
+      "status": "Closed",
+      "closed_reason": "Not accepting applications",
+      "closed_at": "2026-11-24T16:00:00",
+      "status_before_close": "To apply",
+      "tier": "B",
+      "fit_score": 80,
+      "queue_rank": 30,
+      "location": "Remote, United States",
+      "remote": "US remote",
+      "comp": "Not posted",
+      "source": "example seed",
+      "source_group": "example",
+      "apply_url": "https://jobs.example.com/hooli-compute/principal-solutions-architect",
+      "posting_url": "https://jobs.example.com/hooli-compute/principal-solutions-architect",
+      "ats": "lever",
+      "posted": "1 month ago",
+      "created_at": "2026-11-19T13:00:00",
+      "skills": [
+        "architecture",
+        "AWS",
+        "GCP"
+      ],
+      "fit_notes": "Posting closed. Kept for history.",
+      "gaps": "",
+      "jd": "This posting is no longer accepting applications. It remains in the example seed so you can see a closed role.",
+      "questions": []
+    },
+    {
+      "ref": "J-008",
+      "company": "Soylent Security",
+      "role": "Forward Deployed Engineer",
+      "kind": "fde",
+      "category": "security",
+      "status": "Next steps",
+      "date_applied": "2026-11-21",
+      "receipt_url": "https://mail.example.com/receipt/soy-008",
+      "gmail_receipt_url": "https://mail.example.com/receipt/soy-008",
+      "follow_up": "2026-11-27",
+      "tier": "A",
+      "fit_score": 79,
+      "queue_rank": 6,
+      "location": "Remote, United States",
+      "remote": "US remote",
+      "comp": "$185,000-$225,000",
+      "comp_max": 225000,
+      "source": "example seed",
+      "source_group": "example",
+      "apply_url": "https://jobs.example.com/soylent-security/forward-deployed-engineer",
+      "posting_url": "https://jobs.example.com/soylent-security/forward-deployed-engineer",
+      "ats": "ashby",
+      "posted": "2 weeks ago",
+      "created_at": "2026-11-19T14:00:00",
+      "skills": [
+        "security",
+        "Linux",
+        "customer-facing"
+      ],
+      "fit_notes": "Recruiter asked for a follow-up. Example of Next steps.",
+      "gaps": "No prior vendor security certification in the example profile.",
+      "jd": "Soylent Security is hiring a Forward Deployed Engineer to land detections and workflows in customer environments.",
+      "questions": []
+    }
+  ],
+  "contacts": [
+    {
+      "ref": "J-001",
+      "role_kind": "hiring_manager",
+      "name": "Jordan Lee",
+      "title": "Director of Solutions Engineering",
+      "company": "Acme Cloud",
+      "location": "United States",
+      "source": "example",
+      "linkedin_url": "https://www.linkedin.com/in/example-jordan-lee",
+      "work_email": "jordan.lee@example.com",
+      "notes": "Example contact. Not a real person."
+    },
+    {
+      "ref": "J-001",
+      "role_kind": "peer",
+      "name": "Sam Okonkwo",
+      "title": "Staff Solutions Engineer",
+      "company": "Acme Cloud",
+      "location": "United States",
+      "source": "example",
+      "linkedin_url": "https://www.linkedin.com/in/example-sam-okonkwo",
+      "notes": "Example contact. Not a real person."
+    },
+    {
+      "ref": "J-001",
+      "role_kind": "recruiter",
+      "name": "Riley Chen",
+      "title": "GTM Recruiter",
+      "company": "Acme Cloud",
+      "location": "United States",
+      "source": "example",
+      "notes": "Example contact. Not a real person."
+    },
+    {
+      "ref": "J-002",
+      "role_kind": "hiring_manager",
+      "name": "Casey Nguyen",
+      "title": "Head of Field Engineering",
+      "company": "Globex AI",
+      "location": "United States",
+      "source": "example",
+      "linkedin_url": "https://www.linkedin.com/in/example-casey-nguyen",
+      "notes": "Example contact. Not a real person."
+    },
+    {
+      "ref": "J-005",
+      "role_kind": "hiring_manager",
+      "name": "Jordan Lee",
+      "title": "Head of Customer Engineering",
+      "company": "Umbrella DevTools",
+      "location": "United States",
+      "source": "example",
+      "notes": "Example contact. Not a real person."
+    }
+  ],
+  "answers": [
+    {
+      "id": "auth-us",
+      "category": "Work authorization",
+      "question": "Are you authorized to work in the United States?",
+      "answer": "Yes, I am authorized to work in the United States.",
+      "needs_review": false,
+      "sort": 10
+    },
+    {
+      "id": "remote-ok",
+      "category": "Location",
+      "question": "Are you able to work remotely in the United States?",
+      "answer": "Yes. I am based in Portland, Oregon and I work remotely across U.S. time zones.",
+      "needs_review": false,
+      "sort": 20
+    },
+    {
+      "id": "notice",
+      "category": "Availability",
+      "question": "What is your notice period?",
+      "answer": "I can start after a standard two-week notice period.",
+      "needs_review": false,
+      "sort": 30
+    },
+    {
+      "id": "salary",
+      "category": "Compensation",
+      "question": "What are your salary expectations?",
+      "answer": "Replace this with your own range before you paste it. The example profile uses a $150,000 minimum base as a fit rule, not as a public number to send.",
+      "needs_review": true,
+      "sort": 40
+    }
+  ],
+  "settings": {
+    "daily_goal": 5,
+    "progress_start": "2026-11-19",
+    "identity": {
+      "status": "Example identity. Replace every field with your own before you apply.",
+      "identities": [
+        {
+          "name": "Alex Rivera",
+          "use": "Default legal name for most application forms."
+        },
+        {
+          "name": "A. Rivera",
+          "use": "Shorter variant for forms that fight a two-word first name."
+        }
+      ],
+      "fields": [
+        {
+          "label": "Full name",
+          "value": "Alex Rivera"
+        },
+        {
+          "label": "Email",
+          "value": "alex.rivera@example.com"
+        },
+        {
+          "label": "Phone",
+          "value": "+1-555-0100"
+        },
+        {
+          "label": "Location",
+          "value": "Portland, OR"
+        },
+        {
+          "label": "Address",
+          "value": "123 Example Street, Springfield, OR 97403"
+        },
+        {
+          "label": "LinkedIn",
+          "value": "https://www.linkedin.com/in/example-alex-rivera"
+        },
+        {
+          "label": "GitHub",
+          "value": "https://github.com/example"
+        },
+        {
+          "label": "Portfolio",
+          "value": "https://example.com/alex-rivera"
+        }
+      ],
+      "steps": [
+        "Create an Identity in 1Password with your legal name, email, phone, address, and links.",
+        "Add variants only when a form cannot accept your default name.",
+        "Click the first field of an application and let 1Password fill it. You still review and submit."
+      ]
+    },
+    "company_apply_limits": [
+      {
+        "company": "Globex AI",
+        "max_apps": 3,
+        "window_days": 30,
+        "window_kind": "rolling",
+        "policy_url": "https://example.com/globex-ai/careers-policy",
+        "note": "Example cap: three applications per rolling 30 days. Edit or delete this."
+      }
+    ],
+    "company_skips": [],
+    "company_extra_applications": []
+  }
+}

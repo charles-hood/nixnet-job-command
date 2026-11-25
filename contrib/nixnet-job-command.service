@@ -1,0 +1,26 @@
+# systemd --user unit for NixNet Job Command.
+#   mkdir -p ~/.config/systemd/user
+#   sed "s|__INSTALL_DIR__|$HOME/src/nixnet-job-command|g" contrib/nixnet-job-command.service \
+#     > ~/.config/systemd/user/nixnet-job-command.service
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now nixnet-job-command.service
+#
+# Edit the paths, port and bind to match your install. Default bind is localhost.
+
+[Unit]
+Description=NixNet Job Command
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=__INSTALL_DIR__
+Environment=NJC_PORT=8742
+Environment=NJC_BIND=127.0.0.1
+Environment=NJC_DATA=__INSTALL_DIR__/data
+Environment=NJC_PROFILE=__INSTALL_DIR__/profile.json
+ExecStart=/usr/bin/python3 __INSTALL_DIR__/app/server.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,45 @@
+# NixNet Job Command — copy to config.toml and edit.
+# Secrets do not belong in this file. Use .env or the data directory.
+
+app_name = "NixNet Job Command"
+brand = "nixfred"
+# Display name used in the greeting and Progress header.
+# Leave unset to use profile.json.
+# display_name = "Alex Rivera"
+
+port = 8742
+# Comma-separated or TOML array. Default is localhost only.
+# The server refuses 0.0.0.0 unless NJC_ALLOW_PUBLIC_BIND=1.
+bind = "127.0.0.1"
+# data_dir = "./data"   # keep this on a LOCAL disk, not a network share
+# db_file = "njc.db"     # keep an existing name, for example "jcc.db"
+# profile_path = "./profile.json"
+# seed_path = "./seed/example_seed.json"   # "none" turns seeding off
+
+# "local" uses the host timezone. Or a zone like "America/New_York".
+timezone = "local"
+# Daily application goal. Also editable in the Progress page.
+daily_goal = 5
+# First day of the Progress graph. If omitted, first boot uses today.
+# progress_start = "2026-11-25"
+
+assistant_name = "your assistant"
+
+[identity]
+vault = "Job Search"
+
+[fit]
+# Example rules only. Stored on each job as a fit_score; agents can use these.
+min_base_pay = 150000
+locations = ["Remote US", "Portland, OR"]
+kinds = ["SE", "SA", "FDE", "DevRel", "Customer Engineer"]
+notes = "Change these to match your search."
+
+# Optional branding and defaults.
+# first_name = "Alex"
+# logo = "/logo.svg"
+# favicon = "/favicon.svg"
+# static_overlay = "/path/to/local/folder"   # files here shadow app/static
+# default_resume = "resume.pdf"
+# resume_note = "Keep the file your profile names, and attach it on the official form."
+# timezone_label = "ET"

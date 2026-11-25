@@ -1,0 +1,31 @@
+# Runtime data and secrets. Never commit these.
+data/
+*.db
+*.db-wal
+*.db-shm
+.env
+*.bak
+backups/
+exports/
+logs/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.DS_Store
+
+# Local copies of the examples. Keep the *.example.* files.
+config.toml
+config.json
+profile.json
+
+# Editor and OS
+.idea/
+.vscode/
+*.swp
+
+# macOS AppleDouble sidecar files (common on the NAS share)
+._*
+
+# SQLite leftovers
+*.db-journal

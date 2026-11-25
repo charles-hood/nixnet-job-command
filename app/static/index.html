@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0f12">
+<title>{{app_name}}</title>
+<link rel="icon" href="{{favicon}}">
+<link rel="apple-touch-icon" href="{{logo}}">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="stylesheet" href="/style.css?v={{version}}">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#/"><img src="{{logo}}" alt=""><span><b>{{app_name}}</b><small>{{brand}}</small></span></a>
+  <button class="menu" id="menuBtn" aria-label="Menu">☰</button>
+  <nav id="nav">
+    <a href="#/" data-r="dash">Dashboard</a>
+    <a href="#/progress" data-r="progress">Progress</a>
+    <a href="#/queue" data-r="queue">Apply queue</a>
+    <a href="#/stretch" data-r="stretch">Stretch</a>
+    <a href="#/jobs" data-r="jobs">Jobs</a>
+    <a href="#/answers" data-r="answers">Answers</a>
+    <a href="#/referrals" data-r="referrals">Referrals</a>
+    <a href="#/identity" data-r="identity">1Password</a>
+    <a href="#/feedback" data-r="feedback">Feedback</a>
+    <a href="#/data" data-r="data">Data &amp; API</a>
+  </nav>
+  <div class="today" id="todayPill" title="Applied today vs. goal"></div>
+</header>
+<main id="app"><div class="loading">Loading…</div></main>
+<div id="toast"></div>
+<script src="/app.js?v={{version}}"></script>
+</body>
+</html>
